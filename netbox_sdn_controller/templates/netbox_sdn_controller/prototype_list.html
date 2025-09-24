@@ -1,0 +1,27 @@
+{% extends 'generic/object_children.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block bulk_controls %}
+    {# First, render the default bulk controls (edit, delete) from the parent template #}
+    {{ block.super }}
+
+    {# Now, add the Transfer button beside the existing bulk action buttons #}
+    <div class="btn-group" role="group">
+      <button type="submit" name="_transfer"
+      {% formaction %}="{% url 'plugins:netbox_sdn_controller:transfer_to_netbox_task' object.pk %}"
+      class="btn btn-primary" {% if object.last_sync_job_not_ready %}disabled{% endif %}>
+      <i class="mdi mdi-plus-thick" aria-hidden="true"></i> {% trans "To NetBox" %}
+      </button>
+    </div>
+    <div class="btn-group" role="group">
+
+        <button type="submit" name="_fetch"
+            {% formaction %}="{% url 'plugins:netbox_sdn_controller:fetch_selected_task' object.pk %}"
+            class="btn btn-primary" {% if object.last_sync_job_not_ready %}disabled{% endif %}>
+            <i class="mdi mdi-plus-thick" aria-hidden="true"></i> {% trans "Fetch Selected" %}
+        </button>
+    </div>
+
+
+{% endblock bulk_controls %}

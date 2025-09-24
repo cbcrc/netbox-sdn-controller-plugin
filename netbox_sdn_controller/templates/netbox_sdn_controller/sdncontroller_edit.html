@@ -1,0 +1,27 @@
+{% extends 'generic/object_edit.html' %}
+{% load form_helpers %}
+
+{% block form %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><strong>SDN Controller Settings</strong></div>
+        <div class="panel-body">
+            {% render_field form.hostname %}
+            {% render_field form.sdn_type %}
+            {% render_field form.version %}
+        </div>
+    </div>
+    {% if form.custom_fields %}
+    <div class="field-group mb-5">
+      <div class="row mb-2">
+        <h5 class="offset-sm-3">Device Families</h5>
+      </div>
+      {% render_custom_fields form %}
+    </div>
+  {% endif %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><strong>Config Enabled</strong></div>
+        <div class="panel-body">
+            {% render_field form.status %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'generic/object.html' %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">Actions</h5>
+            <div class="card-body">
+                {# Catalyst Center links only if the controller is Catalyst Center #}
+                {% if dnac_config.sdn_controller.sdn_type == "Catalyst Center" %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="catalyst-center-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Catalyst Center
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="catalyst-center-dropdown">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="https://{{ dnac_config.sdn_controller.hostname }}/dna/provision/devices/inventory/device-details?deviceId={{ dnac_config.instance_uuid }}"
+                                           target="_blank" rel="noopener noreferrer">
+                                            Device Details
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="https://{{ dnac_config.sdn_controller.hostname }}/dna/assurance/device/details?emptyDevice=false&id={{ dnac_config.instance_uuid }}"
+                                           target="_blank" rel="noopener noreferrer">
+                                            Device 360
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Sync actions regrouped in one dropdown #}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="sync-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Sync Actions
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="sync-dropdown">
+                                <li>
+                                    <form method="post" action="{% url 'plugins:netbox_sdn_controller:sync_prototype_task' dnac_config.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">Relaunch Sync</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form method="post" action="{% url 'plugins:netbox_sdn_controller:fetch_and_sync_prototype_task' dnac_config.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">Fetch and Sync</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+          <div class="card">
+            <h5 class="card-header">Device Prototype</h5>
+            <div class="card-body">
+              <table class="table table-hover attr-table">
+                <tr>
+                  <th scope="row">Prototype</th>
+                  <td>{{ dnac_config|linkify }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Matching NetBox Device</th>
+                  <td>{{ object|linkify }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">SDN Controller</th>
+                  <td>{{ dnac_config.sdn_controller|linkify }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Instance uuid</th>
+                  <td>{{ dnac_config.instance_uuid }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">SDN Device Type</th>
+                  <td>{{ dnac_config.sdn_device_type }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Device Type</th>
+                  <td>{{ dnac_config.device_type|linkify }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Family</th>
+                  <td>{{ dnac_config.family }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">SDN Role</th>
+                  <td>{{ dnac_config.sdn_role }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Device Role</th>
+                  <td>{{ dnac_config.role|linkify }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Serial number</th>
+                  <td>{{ dnac_config.serial }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">SDN Hostname</th>
+                  <td>{{ dnac_config.sdn_hostname }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Site</th>
+                  <td>{{ dnac_config.site|linkify }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">SDN Management ip</th>
+                  <td>{{ dnac_config.sdn_management_ip }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Primary IPv4</th>
+                  <td>{{ dnac_config.primary_ip4|linkify }}</td>
+                </tr>
+
+              </table>
+            </div>
+          </div>
+          {% include 'inc/panels/custom_fields.html' %}
+          <div class="card">
+            <div class="card-header">
+                <h5>Raw Data</h5>
+
+            </div>
+            <div class="card-body">
+              {% include 'extras/inc/configcontext_data.html' with data=dnac_config.raw_data format=request_format %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col col-md-6">
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}

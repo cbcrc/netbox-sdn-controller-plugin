@@ -1,0 +1,157 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+    <div class="card">
+        <h5 class="card-header">Actions</h5>
+        <div class="card-body">
+
+            {# Catalyst Center links only if the controller is Catalyst Center #}
+            {% if object.sdn_controller.sdn_type == "Catalyst Center" %}
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="catalyst-center-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Catalyst Center
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="catalyst-center-dropdown">
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="https://{{ object.sdn_controller.hostname }}/dna/provision/devices/inventory/device-details?deviceId={{ object.instance_uuid }}"
+                                       target="_blank" rel="noopener noreferrer">
+                                        Device Details
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="https://{{ object.sdn_controller.hostname }}/dna/assurance/device/details?emptyDevice=false&id={{ object.instance_uuid }}"
+                                       target="_blank" rel="noopener noreferrer">
+                                        Device 360
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Sync actions regrouped in one dropdown #}
+            <div class="card">
+                <div class="card-body">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="sync-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Sync Actions
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="sync-dropdown">
+                            <li>
+                                <form method="post" action="{% url 'plugins:netbox_sdn_controller:sync_prototype_task' object.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">Relaunch Sync</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="post" action="{% url 'plugins:netbox_sdn_controller:fetch_and_sync_prototype_task' object.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">Fetch and Sync</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+      <div class="card">
+        <h5 class="card-header">Device Prototype</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Prototype</th>
+              <td>{{ object|linkify }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Matching NetBox Device</th>
+              <td>{{ object.matching_netbox_device|linkify }}</td>
+            </tr>
+            <tr>
+              <th scope="row">SDN Controller</th>
+              <td>{{ object.sdn_controller|linkify }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Instance uuid</th>
+              <td>{{ object.instance_uuid }}</td>
+            </tr>
+            <tr>
+              <th scope="row">SDN Device Type</th>
+              <td>{{ object.sdn_device_type }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Device Type</th>
+              <td>{{ object.device_type|linkify }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Family</th>
+              <td>{{ object.family }}</td>
+            </tr>
+            <tr>
+              <th scope="row">SDN Role</th>
+              <td>{{ object.sdn_role }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Device Role</th>
+              <td>{{ object.role|linkify }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Serial number</th>
+              <td>{{ object.serial }}</td>
+            </tr>
+            <tr>
+              <th scope="row">SDN Hostname</th>
+              <td>{{ object.sdn_hostname }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Site</th>
+              <td>{{ object.site|linkify }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Tenant</th>
+              <td>{{ object.tenant|linkify }}</td>
+            </tr>
+            <tr>
+              <th scope="row">SDN Management ip</th>
+              <td>{{ object.sdn_management_ip }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Primary IPv4</th>
+              <td>{{ object.primary_ip4|linkify }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Status</th>
+              <td>{{ object.sync_status }}</td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+      <div class="card">
+        <div class="card-header">
+            <h5>Raw Data</h5>
+ 
+        </div>
+        <div class="card-body">
+          {% include 'extras/inc/configcontext_data.html' with data=object.raw_data format=request_format %}
+        </div>
+    </div>
+    </div>
+
+    <div class="col col-md-6">
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}

@@ -1,0 +1,117 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+{% load buttons %}
+{% load static %}
+{% load helpers %}
+{% load plugins %}
+{% load i18n %}
+{% load l10n %}
+{% load mptt %}
+
+{% block content %}
+<script>
+    var fetchStatusUrl = "{% url 'plugins:netbox_sdn_controller:fetch_status' object.pk %}";
+</script>
+<script src="{% static 'javascript/refresh_sync_status.js' %}"></script> 
+
+</script>
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">SDN Controller</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Hostname</th>
+              <td>{{ object.hostname }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Version</th>
+              <td>{{ object.version }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Type</th>
+              <td>{{ object.sdn_type }}</td>
+            </tr>
+            <tr>
+            <tr>
+              <th scope="row">Default Tenant</th>
+              <td>{{ object.default_tenant|linkify }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Device Families</th>
+              <td>{{ object.device_families }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Last Update</th>
+              <td>{{ object.last_updated }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+      <div class="card">
+        <div class="card-header">
+            <h5>Regex Templates</h5>
+
+        </div>
+        <div class="card-body">
+          {% include 'extras/inc/configcontext_data.html' with data=object.regex_template format=request_format %}
+        </div>
+      </div>
+    </div>
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Fetch</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <form method="post" action="{% url 'plugins:netbox_sdn_controller:launch_task' object.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" id="fetch-button" {% if object.last_fetch_job_not_ready %}disabled{% endif %}>Fetch</button>
+              </form>
+            </tr>
+            <tr>
+              <th scope="row">Last Fetch Status</th>
+              <td id="fetch-status">{{ object.last_fetch_job.status }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Last Fetch Job</th>
+              <td>{{ object.last_fetch_job|linkify }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h5 class="card-header">Individual Sync / Fetch</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Latest Job Status</th>
+              <td id="sync-status">
+                    <span
+                        style="{% if object.last_sync_job.status == 'completed' %}
+                                  {% if object.last_sync_job_success %}color: #1F857D;
+                                  {% else %}color: #D63939;
+                                  {% endif %}
+                               {% else %}color: #6c757d;
+                               {% endif %}">
+                        {{ object.last_sync_job.status }}
+                    </span>
+
+
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Latest Job</th>
+              <td>{{ object.last_sync_job|linkify }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}

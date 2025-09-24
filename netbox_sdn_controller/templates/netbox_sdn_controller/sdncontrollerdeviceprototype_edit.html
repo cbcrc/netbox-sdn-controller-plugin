@@ -1,0 +1,21 @@
+{% extends 'generic/object_edit.html' %}
+{% load form_helpers %}
+
+{% block form %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {% render_field form.matching_netbox_device %}
+            {% render_field form.serial %}
+            {% render_field form.sdn_hostname %}
+            {% render_field form.sdn_management_ip %}
+            {% render_field form.primary_ip4 %}
+            {% render_field form.sdn_device_type %}
+            {% render_field form.device_type %}
+            {% render_field form.family %}
+            {% render_field form.sdn_role %}
+            {% render_field form.role %}
+            {% render_field form.site %}
+            {% render_field form.tenant %}
+            {% render_field form.sync_status %}
+    </div>
+{% endblock %}
