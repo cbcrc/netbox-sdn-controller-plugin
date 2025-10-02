@@ -15,7 +15,6 @@ from extras.models import CustomField, CustomFieldChoiceSet
 from extras.choices import CustomFieldTypeChoices, CustomFieldFilterLogicChoices
 from . import forms, models, tables, filtersets, tasks, choices
 
-
 def fetch_job_not_ready(instance: models.SdnController) -> bool:
     """
     Checks if the last fetch job for the given SDN controller instance is not ready.
